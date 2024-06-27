@@ -14,7 +14,7 @@ resource "aws_subnet" "webweaver" {
   vpc_id = aws_vpc.webweaver.id
   map_public_ip_on_launch = true
   cidr_block = var.public_subnet
-  availability_zone = data.aws_availability_zones.available_zones.name[0]
+  availability_zone = data.aws_availability_zones.available_zones.names[0]
 
   tags = {
     Name = "${var.project}-${var.env}-public_subnet"
