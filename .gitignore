@@ -7,3 +7,4 @@ alvo-ssh-keys.pem
 frontend/node_modules
 frontend/build
 frontend/build.zip
+weaver.pem
