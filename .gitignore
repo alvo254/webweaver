@@ -1,0 +1,6 @@
+.obsidian
+.terraform/
+.terraform.lock.hcl
+terraform.tfstate.backup
+terraform.tfstate
+alvo-ssh-keys.pem
