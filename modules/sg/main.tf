@@ -1,5 +1,6 @@
 resource "aws_security_group" "webweaver" {
   vpc_id = var.vpc_id
+  name = "webweaver-sg"
 
   ingress = [
     {

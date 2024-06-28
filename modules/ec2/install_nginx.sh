@@ -1,38 +1,25 @@
 #!/bin/bash
 
+# Exit immediately if a command exits with a non-zero status
 set -e
 
-echo "Starting installation process..." > /var/log/user_data.log
+# Update and install dependencies
+sudo apt update
+sudo apt install -y nginx nodejs npm git
 
-sudo apt update -y
-sudo apt upgrade -y
+# Clone the React app (replace with your repository URL)
+git clone https://github.com/alvo254/fitness-hero-V2
+cd fitness-hero-V2
 
-sudo apt install nginx git npm -y
+# Install dependencies and build the React app
+npm install
+npm run build
 
-curl -sL https://deb.nodesource.com/setup_16.x | sudo -E bash -
-sudo apt install -y nodejs
-
-if [ ! -d "/home/ubuntu/fitness-hero-V2" ]; then
-  git clone https://github.com/alvo254/fitness-hero-V2
-  cd fitness-hero-V2
-  npm install
-  npm run build
-else
-  echo "App already cloned, updating..."
-  cd /home/ubuntu/fitness-hero-V2
-  git pull
-  npm install
-  npm run build
-fi
-
-cat > /home/ubuntu/configure_nginx.sh <<EOF
-
-PUBLIC_IP=\$(curl -s http://169.254.169.254/latest/meta-data/public-ipv4)
-
-sudo bash -c "cat > /etc/nginx/sites-available/default <<EEOF
+# Configure Nginx
+sudo tee /etc/nginx/sites-available/default > /dev/null <<EOT
 server {
     listen 80;
-    server_name \$PUBLIC_IP;
+    server_name _;
 
     location / {
         proxy_pass http://localhost:3000;
@@ -43,29 +30,19 @@ server {
         proxy_cache_bypass \$http_upgrade;
     }
 }
-EEOF"
+EOT
 
+# Restart Nginx
 sudo systemctl restart nginx
-EOF
 
-chmod +x /home/ubuntu/configure_nginx.sh
-
-(crontab -l 2>/dev/null; echo "@reboot /home/ubuntu/configure_nginx.sh") | crontab -/home/ubuntu/configure_nginx.sh
-
-sudo ufw allow 'Nginx Full'
-
+# Install PM2 globally
 sudo npm install -g pm2
 
-cd /home/ubuntu/fitness-hero-V2
+# Start the React app with PM2
+pm2 start npm --name "fitness-hero-V2" -- start
 
-if pm2 list | grep -q 'fitness-hero-V2'; then
-  pm2 restart fitness-hero-V2
-else
-  pm2 start npm --name "fitness-hero-V2" -- start
-fi
-
-pm2 startup
-sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u ubuntu --hp /home/ubuntu
+# Save the PM2 process list and configure to start on reboot
 pm2 save
+sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u ubuntu --hp /home/ubuntu
 
-echo "React app deployed and Nginx configuration script set up successfully!" >> /var/log/user_data.log
+echo "Installation completed successfully!"

@@ -1,5 +1,5 @@
 resource "aws_instance" "webweaver_ec2" {
-  ami = "ami-053b0d53c279acc90"
+  ami = "ami-04b70fa74e45c3917"
   instance_type = "t2.micro"
   subnet_id = var.subnet_id
   vpc_security_group_ids = [var.security_group]
