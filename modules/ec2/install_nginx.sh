@@ -35,6 +35,8 @@ EOT
 # Restart Nginx
 sudo systemctl restart nginx
 
+
+//------------------------------------experimenting-----------------------------
 # Install PM2 globally
 sudo npm install -g pm2
 
