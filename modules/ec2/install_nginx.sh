@@ -8,8 +8,8 @@ sudo apt update
 sudo apt install -y nginx nodejs npm git
 
 # Clone the React app (replace with your repository URL)
-git clone https://github.com/alvo254/fitness-hero-V2
-cd fitness-hero-V2
+git clone https://github.com/alvo254/webweaver
+cd webweaver/frontend
 
 # Install dependencies and build the React app
 npm install
@@ -39,7 +39,7 @@ sudo systemctl restart nginx
 sudo npm install -g pm2
 
 # Start the React app with PM2
-pm2 start npm --name "fitness-hero-V2" -- start
+pm2 start npm --name "frontend" -- start
 
 # Save the PM2 process list and configure to start on reboot
 pm2 save
