@@ -5,22 +5,13 @@ resource "aws_instance" "webweaver_ec2" {
   vpc_security_group_ids = [var.security_group]
   key_name = "${aws_key_pair.weaver.key_name}"
   user_data = data.template_file.user_data.rendered
-  provisioner "file" {
-    source = "var.frontend"
-    destination = "/tmp/react"
+  associate_public_ip_address = true
 
-    connection {
-        type        = "ssh"
-        user        = "ubuntu"
-        private_key = var.private_key
-        host        = self.public_ip
-    }
-  }
 
   tags = {
     Name = "webweaver-dev-ec2"
   }
-  depends_on = [ aws_key_pair.weaver ]
+
 }
 
 
@@ -42,6 +33,8 @@ resource "local_file" "weaver" {
 
 data "template_file" "user_data" {
   template = file("${path.module}/install_nginx.sh")
+  #   vars = {
+  #   domain_or_ip = aws_instance.webweaver_ec2.public_ip
+  # }
 }
-
 
